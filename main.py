@@ -18,7 +18,7 @@ batch_size = 64
 # 2. Generar dataset sintético
 # ----------------------------
 def generate_batch(batch_size, seq_length, vocab_size):
-    X = np.random.randint(1, vocab_size, (batch_size, seq_length))
+    X = np.random.randint(1, vocab_size, (batch_size, seq_length)) # 
     Y = X.copy()  # salida igual a la entrada
     return torch.tensor(X, dtype=torch.long), torch.tensor(Y, dtype=torch.long)
 
@@ -34,7 +34,7 @@ class Encoder(nn.Module):
     def forward(self, x):
         emb = self.embedding(x)
         outputs, (h, c) = self.lstm(emb)
-        return h, c  # solo devolvemos el estado final
+        return h, c
 
 class Decoder(nn.Module):
     def __init__(self, vocab_size, embedding_dim, hidden_dim):
@@ -42,7 +42,7 @@ class Decoder(nn.Module):
         self.embedding = nn.Embedding(vocab_size, embedding_dim)
         self.lstm = nn.LSTM(embedding_dim, hidden_dim, batch_first=True)
         self.fc = nn.Linear(hidden_dim, vocab_size)
-    
+
     def forward(self, x, h, c):
         emb = self.embedding(x)
         outputs, (h, c) = self.lstm(emb, (h, c))
@@ -54,7 +54,7 @@ class Seq2Seq(nn.Module):
         super().__init__()
         self.encoder = encoder
         self.decoder = decoder
-    
+        
     def forward(self, src, trg, teacher_forcing_ratio=0.5):
         batch_size, trg_len = trg.shape
         vocab_size = self.decoder.fc.out_features
