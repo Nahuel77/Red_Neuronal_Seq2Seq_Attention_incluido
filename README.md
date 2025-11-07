@@ -27,8 +27,8 @@ Imaginemos que nuestra red esta entrenada con tokens de cifras numericas del est
     [[7,2,8,4,3], [6,9,4,7,1], [2,5,1,8,5], ...]
 
 Se le pasa un primer dato a la red para que prediga la secuencia correcta.
-A tal dato se lo denomina <SOS>.
-Supongamos que el <SOS> es 7. La red inferirá por lo aprendido que sigue un 2; y si venia un 7 y luego un 2, inferirá que sigue un 8... y asi.
+A tal dato se lo denomina SOS.
+Supongamos que el SOS es 7. La red inferirá por lo aprendido que sigue un 2; y si venia un 7 y luego un 2, inferirá que sigue un 8... y asi.
 
 Y si en el batch hubieran dos o más token que comenzaran con 7?
 
@@ -57,7 +57,7 @@ Miremos antes la configuración inicial:
 device funciona como un switch, donde si existe GPU disponible, la usará, sino operará con la CPU.
 Nuesto vocabulario, numerico, tiene un tamaño de 10 (numeros del 0 al 9). Y el resto se explican por si mismos.
 
-La red toma el <SOS>, y lo representa en un vector de pesos randoms.
+La red toma el SOS, y lo representa en un vector de pesos randoms.
 
 Miremos la clase Encoder:
 
@@ -85,11 +85,11 @@ Esto nos da un array por cada vocabulario de nuestra red. Cada array tiene 16 va
     ...
     [ 0.09, -0.14, 0.02, ..., -0.03]]  # embedding para el <SOS> 9
 
-Por lo que al pasar al forward el <SOS> (x) selecciona el embedding para el token 7.
+Por lo que al pasar al forward el SOS (x) selecciona el embedding para el token 7.
 
     emb = self.embedding(x)
 
-si nuestro <SOS> fuera el 1, estaría representado con [ 0.12,  0.01, -0.07, ..., 0.08]
+si nuestro SOS fuera el 1, estaría representado con [ 0.12,  0.01, -0.07, ..., 0.08]
 
 Luego pasa ese embedding por la red LSTM propia de Torch y retorna sus salidas "h" y "c" (ver el repo RNN y LSTM linkeado al final este README).
 
