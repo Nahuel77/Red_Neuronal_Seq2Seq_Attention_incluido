@@ -8,7 +8,7 @@ Antes tengo que decir que en este codigo se deja mucho a las librerías. Cosa qu
 
 Pero habiendo aprendido MLP, CNN, RNN (LTSM incluido) me puedo permitir usar Torch, (una librería que automatiza varios procesos y nos ofrece estructuras incluidas).
 
-Lo que puede jugar a favor o en contra, depende de como sea el programador. Yo por mi parte acostumbro a mirar mas el codigo por mi mismo y evitarlas. Al menos en lo que es aprender.
+Lo que puede jugar a favor o en contra, depende de como sea el programador. Yo acostumbro a mirar mas el codigo por mi mismo y evitarlas. Al menos en lo que es aprender.
 
 Por lo que, aqui en este resumen, no solo explicaré logica y estructura, sino tambien los puntos que importan a lo que es el uso de la librería.
 
@@ -16,13 +16,13 @@ Por mi parte, jamas había usado Torch. Se me hace que es un arma de doble filo.
 Mirando un poco su codigo fuente, a mi gusto, no esta bien documentado.
 Pero eso no quita que sin Torch, tendriamos que escribir mucho mas codigo, que en parte ya aprendimos con RNN y LSTM.
 
-De nuevo, como en RNN, es dificil desarrollar un proyecto toy, que involucra una tecnología pensada para procesar cantidades inmensas de datos, que refleje buenamente el poder de lo que intentamos aprender.
+De nuevo, como en RNN, es dificil desarrollar un proyecto toy que involucre una tecnología pensada para procesar cantidades inmensas de datos y que refleje buenamente el poder de lo que intentamos aprender.
 No es lo que hace, sino como lo hace.
 
 Esta Seq2Seq tiene como proposito predecir una secuencia de numeros aprendida previamente.
 De modo que si le dieramamos un numero, aprendiera que secuencia le sigue.
 
-Imaginemos que nuestra red esta entrenada con tokens de cifras numericas del estilo
+Imaginemos que nuestra red está entrenada con tokens de cifras numericas del estilo
 
     [[7,2,8,4,3], [6,9,4,7,1], [2,5,1,8,5], ...]
 
@@ -34,9 +34,9 @@ Y si en el batch hubieran dos o más token que comenzaran con 7?
 
     [[7,2,8,4,3], [7,6,5,2,8], [7,9,1,2,4], ...]
 
-Recordemos que al igual que en RNN, esta es una red pensada para trabajar con secuencias. La sera la que mas peso tenga, según su aprendizaje, pero en un uso util real de este tipo de red, podemos usar las salidas con más pesos, para dar opciones y tener un predictor de texto como los que usamos en los celulares.
+Recordemos que al igual que en RNN, esta es una red pensada para trabajar con secuencias. La salida será la que mas peso tenga, según su aprendizaje. Pero en un uso util real de este tipo de red, podemos usar las salidas con más pesos, para dar opciones y tener un predictor de texto como los que usamos en los celulares.
 
-La estructura de entrenamiento esta compuesta de 3 clases y instancia de la siguiente manera.
+La estructura de entrenamiento está compuesta de 3 clases e instancian de la siguiente manera.
 
     encoder = Encoder(vocab_size, embedding_dim, hidden_dim)
     decoder = Decoder(vocab_size, embedding_dim, hidden_dim)
@@ -72,7 +72,7 @@ Miremos la clase Encoder:
             outputs, (h, c) = self.lstm(emb)
             return h, c
 
-Vemos que en el constructor se inicia una matriz de valores randoms de tamaño 10x16:
+Vemos que en el constructor que se inicia una matriz de valores randoms de tamaño 10x16:
 
     self.embedding = nn.Embedding(vocab_size, embedding_dim)
 
@@ -96,7 +96,10 @@ Luego pasa ese embedding por la red LSTM propia de Torch y retorna sus salidas "
     outputs, (h, c) = self.lstm(emb)
     return h, c
 
-Aunque aqui no podemos verlo ya que usamos una librería. En LSTM h → estado oculto nuevo (salida activada, se usa para predicción), c el estado interno nuevo (memoria). También se retorna outputs pero aun no necesitamos ninguna inferencia, por lo tanto se omite su uso. Se retorna solo h y c.
+Aunque aqui no podemos verlo ya que usamos una librería. En LSTM:
+h → estado oculto nuevo (salida activada, se usa para predicción). 
+c -> el estado interno nuevo (memoria).
+También se retorna outputs pero aun no necesitamos ninguna inferencia, por lo tanto se omite su uso. Se retorna solo h y c.
 
 En el Decoder tenemos procesos similares pero con unas diferencias...
 
@@ -104,15 +107,16 @@ Agregamos una transformacion linear Wx + b (Ver MLP), que se inicia con valores 
 
     self.fc = nn.Linear(hidden_dim, vocab_size)
 
-Ahora aqui, tuve una confusión enorme (por eso no me gustan mucho las librerias, aunque es culpa mia por querer ir rapido) nn.Linear no es una transformación linear vista como una multiplicación de matrices y ya. Es mas que eso. Es una instanciación de una clase y al escribir luego la siguiente linea de codigo:
+Ahora aqui, tuve una confusión enorme (por eso no me gustan mucho las librerias, aunque es culpa mia por querer ir rapido) nn.Linear no es una transformación linear vista como una multiplicación de matrices y ya. Es mas que eso. Es una instanciación de una clase Linear y al escribir luego la siguiente linea de codigo:
 
     logits = self.fc(outputs)
 
-Ejecutamos otro forward que es el verdadero xW_t + b. Simplificando, multiplicamos los outputs por la transformación linear self.fc. Aqui estaría bueno detenerse a estudiar Torch a fondo. Pero yo no estoy aprendiendo librerias sino redes neuronales.
+Ejecutamos otro forward que es el verdadero x*W_t + b. Simplificando, multiplicamos los outputs por la transformación linear self.fc. Aqui estaría bueno detenerse a estudiar Torch a fondo. Pero yo no estoy aprendiendo librerias sino redes neuronales. De momento me quedo viendo redes.
 
     logits = self.fc(outputs)
     es equivalente a:
     logits = torch.matmul(outputs, self.fc.weight.T) + self.fc.bias
+    Es decir x*W + b
 
 La transformada de los pesos weight.T y los bias. Son propios de la clase y no de la instancia. Se inician con valores que se iran entrenando.
 
@@ -122,7 +126,7 @@ Decoder finalmente retorna logits, h y c
 
 Se va visualizando ahora el porque del nombre Secuancia a Secuencia. Encoder a Decoder.
 
-Antes de seguir con la explicación, comento un dato interesante que vi en un video. En 2016 Google implemento NMT (Neural Machine Translator) a su traductor. Y fue entonces cuando el traductor de google realmente comenzó a funcionar con la efectividad que conocemos ahora. Antes de eso, no era tan buen traductor.
+Antes de seguir con la explicación, comento un dato interesante que vi en un video. En 2016 Google implementó NMT (Neural Machine Translator) a su traductor. Y fue entonces cuando el traductor de google realmente comenzó a funcionar con la efectividad que conocemos ahora. Antes de eso, no era tan buen traductor.
 Originalmente me planteé hacer un traductor como proyecto. Pero asumí que el dataset y entrenamiento podría ser excesivo para mis recursos de hardware (una notebook con GPU limitado de motherboard).
 
 Sin embargo pensemos en el ejemplo del traductor para entender mejor como trabaja seq2seq.
@@ -130,14 +134,27 @@ Sin embargo pensemos en el ejemplo del traductor para entender mejor como trabaj
 Encoder recibirá una frase en español. Por ejemplo "Hola mundo". Genera las salidas propias de LSTM h y c.
 Decorder recibe esta información y produce las salidas. La clase seq2seq es la encargada de gestionar estos cambios entre otras funciones como calcular la perdida.
 
-        Encoder LSTM                      Decoder LSTM
-    {[Hola] -> [Mundo]} ----h---> {[SOS]:Hello -> [Hello]:World}
+        Encoder LSTM    ----c--->       Decoder LSTM
+    {[Hola] -> [Mundo]} ----h---> {[SOS]:Hello -> [Hello]:World} --h--c--globals-->
 
 Como se observa en la clase Seq2seq, el constructor recibe tanto al encoder como al decoder y los instancia como self.
+
+    self.encoder = encoder
+    self.decoder = decoder
+
 En nuestro ciclo for de epocas:
 
     for epoch in range(num_epochs):
         X, Y = generate_batch(batch_size, seq_length, vocab_size)
+
+Que hace generate_batch():
+
+    def generate_batch(batch_size, seq_length, vocab_size):
+        X = np.random.randint(1, vocab_size, (batch_size, seq_length)) # 
+        Y = X.copy()  # salida igual a la entrada
+        return torch.tensor(X, dtype=torch.long), torch.tensor(Y, dtype=torch.long)
+
+Declara X como una matriz de numeros randoms enteros que va desde 1 a 9 (1 a vocab_size) y cuyo tamaño es 64x5 (batch_size, seq_length). Copa en Y a X y los retorna como tensores Torch.
 
 tenemos la declaracion de los batchs X e Y. Estos son similares y uno corresponde a la entrada y otro a la salida esperada para el entrenamiento. Concepto que ya vimos antes en otras redes.
 Luego pasamos a model los batchs y esto es equivalente a pasarselos al forward.
@@ -180,13 +197,13 @@ trg (que es el batch generado en el bucle for de el entrenamiento y de forma 64x
 
     [[3],[3],[9],[2],[4],[2],[9],[5]...[8],[1],[5],[1],[9],[9],[3],[1]]
 
-Eso lo recibe el Decoder tomando el primero como SOS. En el bucle siguiente vemos que junto con los batchs, enviamos h que es la información de como el Encoder memorizo los datos y c que es lo que aprendio a olvidar, a retener y a no aprender (Ver LSTM compuerta ouput).
+Eso lo recibe el Decoder tomando el primero como SOS. En el bucle siguiente vemos que junto con los batchs, enviamos h que es la información de como el Encoder memorizo los datos y c que es lo que aprendió a olvidar, a retener y a no aprender (Ver LSTM compuerta ouput).
 
     for t in range(1, trg_len):
         output, h, c = self.decoder(input, h, c)
         outputs[:, t] = output.squeeze(1)
 
-Como vemos se define output, h y c que es lo que Decoder procesó y comenzamos a empaquetar los outputs en grupos de a 5. Claro que cada uno esta a su vez agrupado en grupo de 10 valores reales, desde los que se realiza la inferencia. A su vez estos estan agrupados en grupo de 64.
+Como vemos se define output, h y c (para el scoope de la clase seq2seq) que es lo que Decoder procesó y comenzamos a empaquetar los outputs en grupos de a 5. Claro que cada uno esta a su vez agrupado en grupo de 10 valores reales, desde los que se realiza la inferencia. A su vez estos estan agrupados en grupo de 64.
 
     [[[ 0.0000,  0.0000,  0.0000,  ...,  0.0000,  0.0000,  0.0000],
     [-0.7767,  0.0528,  0.3603,  ..., -0.0651,  0.1891,  0.0400],
@@ -205,7 +222,7 @@ Finalmente se calcula la perdida y se actualizan los pesos con el backward autom
     loss = criterion(output[:, 1:].reshape(-1, vocab_size), Y[:, 1:].reshape(-1))
     loss.backward()
 
-Como se calcula la perdida y como trabajará el backward se predefinen antes del bucle for
+Cómo se calcula la perdida y cómo trabajará el backward se predefinen antes del bucle for
 
     criterion = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(model.parameters(), lr=0.005)
@@ -225,9 +242,13 @@ Realmente no creo que sea necesario seguir explicando el resto del codigo. Son e
 Final.
 
 Creo que si tenemos que mirar el salto que hizo esta red, comparada con RNN, es claro que demuestra la importancia del Forward... Es el corazon de una red.
-Aquí tenemos 3 forward LSTM directos (En encoder, en decoder y en el modelo), y 1 mas, indirecto si consideramos la transformación linear en el decoder. Pero solo 1 backward.
-Eso claramente nos hace ver que los calculos de aprendizaje ocurren en el Forward, pero en el back, los calculos de ajustes sobre esos aprendizajes van al Backward.
-Tambien es llamativo como, aunque el poder de esta red neuronal es mucho mayor a sus antecesoras, en esencia estan ocurriendo los mismos calculos W*x + b. Lo que cambian son las estructuras de como hacemos que sucedan esas transformaciones. Matrices... supongo que verlo de una manera geometrica a veces puede ayudar a acostumrar la mente a lo que esta sucediendo tras el codigo. Pero eso una vez que ya se comprendieron los conceptos. Sea lo que sea, el dato que las redes estan trabajando, son matrices de valores numericos intercambiando datos con operaciones matematicas. Pero tambien esta bueno ver como el pensamiento puede ser abstraido a representaciones numericas. Creo que es clave separar una cosa de la otra y pensar asi lo que esta programado aqui.
+Aquí tenemos 3 forward LSTM directos (En encoder, en decoder y en el modelo). Y 1 mas, indirecto, si consideramos la transformación linear en el decoder. Pero solo 1 backward.
+Eso claramente nos hace ver que los calculos de aprendizaje ocurren en el Forward. Pero en el Backward, los calculos de ajustes sobre esos aprendizajes.
+Tambien es llamativo como, aunque el poder de esta red neuronal es mucho mayor a sus antecesoras, en esencia estan ocurriendo los mismos calculos W*x + b. Lo que cambian son las estructuras de como hacemos que sucedan esas transformaciones.
+Me imagino, en este punto de mi camino aprendiendo redes neuronales, si volvieramos a obtener una matris cuyos valores fueran calculados nuevamente con otro proceso LSTM. Es decir otra capa mas de forwards trabajando. ¿Que nuevo filtro podriamos aplicar? Probablemente ya se apliquen.
+
+Matrices... Supongo que verlo de una manera geometrica a veces puede ayudar a acostumrar la mente a lo que esta sucediendo tras el codigo. Pero eso una vez que ya se comprendieron los conceptos, sea lo que sea, el dato que las redes representan y estan trabajando, son al fin y al cabo matrices de valores numericos intercambiando datos con operaciones matematicas.
+Pero tambien esta bueno ver como el pensamiento puede ser abstraido a representaciones numericas. Creo que es clave separar una cosa de la otra y pensar asi lo que se está programado aqui.
 
 
 </br>

@@ -66,7 +66,6 @@ class Seq2Seq(nn.Module):
         for t in range(1, trg_len):
             output, h, c = self.decoder(input, h, c)
             outputs[:, t] = output.squeeze(1)
-            print(outputs)
             top1 = output.argmax(2)
             input = trg[:, t].unsqueeze(1) if random.random() < teacher_forcing_ratio else top1
 
