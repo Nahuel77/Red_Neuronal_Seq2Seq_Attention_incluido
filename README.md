@@ -90,7 +90,7 @@ Por lo que al pasar al forward el SOS (x) selecciona el embedding para el token 
 
     emb = self.embedding(x)
 
-si nuestro SOS fuera el 1, estaría representado con [ 0.12,  0.01, -0.07, ..., 0.08]
+si nuestro SOS fuera el 1, estaría representado por el self.embedding(1) con [ 0.12,  0.01, -0.07, ..., 0.08]
 
 Luego pasa ese embedding por la red LSTM propia de Torch y retorna sus salidas "h" y "c" (ver el repo RNN y LSTM linkeado al final este README).
 
