@@ -86,7 +86,7 @@ Esto nos da un array por cada vocabulario de nuestra red. Cada array tiene 16 va
     ...
     [ 0.09, -0.14, 0.02, ..., -0.03]]  # embedding para el <SOS> 9
 
-Por lo que al pasar al forward el SOS (x) selecciona el embedding para el token 7.
+Por lo que al pasar al forward el SOS (x) selecciona el embedding para el token x.
 
     emb = self.embedding(x)
 
