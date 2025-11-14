@@ -11,6 +11,7 @@ Pero habiendo aprendido MLP, CNN, RNN (LTSM incluido) me puedo permitir usar Tor
 Lo que puede jugar a favor o en contra, depende de como sea el programador. Yo acostumbro a mirar mas el codigo por mi mismo y evitarlas. Al menos en lo que es aprender.
 
 Por lo que, aqui en este resumen, no solo explicaré logica y estructura, sino tambien los puntos que importan a lo que es el uso de la librería.
+Tampoco dejare en el codigo la etapa de salidas. Para aprenderlas, con ver los outputs de la etapa de aprendizaje es suficiente.
 
 Por mi parte, jamas había usado Torch. Se me hace que es un arma de doble filo. Oculta demaciado codigo a mi gusto. Y no imagino lo laborioso que puede volverse si llega a darnos algun problema.
 Mirando un poco su codigo fuente, a mi gusto, no esta bien documentado.
